@@ -96,8 +96,8 @@ def train(data_training,data_groundtruth):
             # _learning_rate = 0.95**(index/250)*0.05
             # _learning_rate_d = 0.95**(index/100)*0.02
             # _learning_rate_g = 0.95**(index/100)*0.02
-            _learning_rate_d =  0.01
-            _learning_rate_g =  0.01
+            _learning_rate_d =  0.02
+            _learning_rate_g =  0.02
             _, d_loss_cur = sess.run([d_solver, d_loss], feed_dict={gen_in: training_batch,real_in: groundtruth_batch,d_learning_rate:_learning_rate_d})
             _, g_loss_cur,summary_str = sess.run([g_solver, g_loss,merged], feed_dict={gen_in: training_batch,real_in: groundtruth_batch,g_learning_rate:_learning_rate_g})
             writer.add_summary(summary_str,index)
