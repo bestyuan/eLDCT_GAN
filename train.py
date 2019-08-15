@@ -32,9 +32,10 @@ def train(data_training,data_groundtruth):
     psnr=0
     ssim=0
 
-    d_loss = -tf.reduce_mean(tf.log(Dx) + tf.log(1.-Dg))
-    g_loss = ADVERSARIAL_LOSS_FACTOR * -tf.reduce_mean(tf.log(Dg)) + PIXEL_LOSS_FACTOR * get_pixel_loss(real_in, Gz) \
-             + STYLE_LOSS_FACTOR * get_style_loss(real_in_bgr, Gz_bgr) + SMOOTH_LOSS_FACTOR * get_smooth_loss(Gz)
+    d_loss = 0.5*(tf.reduce_mean(Dx) + tf.reduce_mean(Dg))
+    g_loss = tf.reduce_mean(Dg) +  STYLE_LOSS_FACTOR * get_style_loss(real_in_bgr, Gz_bgr)
+    # g_loss = ADVERSARIAL_LOSS_FACTOR * -tf.reduce_mean(tf.log(Dg)) + PIXEL_LOSS_FACTOR * get_pixel_loss(real_in, Gz) \
+    #          + STYLE_LOSS_FACTOR * get_style_loss(real_in_bgr, Gz_bgr) + SMOOTH_LOSS_FACTOR * get_smooth_loss(Gz)
     # g_loss = ADVERSARIAL_LOSS_FACTOR * -tf.reduce_mean(tf.log(Dg)) + PIXEL_LOSS_FACTOR * get_pixel_loss(real_in, Gz)
     # g_loss = get_pixel_loss(real_in, Gz)
     # g_loss = ADVERSARIAL_LOSS_FACTOR * -tf.reduce_mean(tf.log(Dg))
@@ -48,6 +49,9 @@ def train(data_training,data_groundtruth):
     g_solver = tf.train.AdamOptimizer(g_learning_rate).minimize(g_loss, var_list=g_vars)
     # g_solver = tf.train.AdamOptimizer(LEARNING_RATE).minimize(g_loss, var_list=g_vars)
 
+
+    ##
+    d_clip = [v.assign(tf.clip_by_value(v, -0.01, 0.01)) for v in d_vars]
 
     init = tf.global_variables_initializer()
     with tf.Session() as sess:
@@ -98,7 +102,9 @@ def train(data_training,data_groundtruth):
             # _learning_rate_g = 0.95**(index/100)*0.02
             _learning_rate_d =  0.02
             _learning_rate_g =  0.02
+            sess.run(d_clip)
             _, d_loss_cur = sess.run([d_solver, d_loss], feed_dict={gen_in: training_batch,real_in: groundtruth_batch,d_learning_rate:_learning_rate_d})
+
             _, g_loss_cur,summary_str = sess.run([g_solver, g_loss,merged], feed_dict={gen_in: training_batch,real_in: groundtruth_batch,g_learning_rate:_learning_rate_g})
             writer.add_summary(summary_str,index)
 
