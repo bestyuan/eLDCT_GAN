@@ -45,8 +45,10 @@ def train(data_training,data_groundtruth):
     g_vars = [var for var in t_vars if 'g_' in var.name]
 
     # d_solver = tf.train.AdamOptimizer(LEARNING_RATE).minimize(d_loss, var_list=d_vars, global_step=global_step)
-    d_solver = tf.train.AdamOptimizer(d_learning_rate).minimize(d_loss, var_list=d_vars, global_step=global_step)
-    g_solver = tf.train.AdamOptimizer(g_learning_rate).minimize(g_loss, var_list=g_vars)
+    # d_solver = tf.train.AdamOptimizer(d_learning_rate).minimize(d_loss, var_list=d_vars, global_step=global_step)
+    d_solver = tf.train.RMSPropOptimizer(d_learning_rate).minimize(d_loss, var_list=d_vars, global_step=global_step)
+    # d_solver = tf.train.AdamOptimizer(d_learning_rate).minimize(d_loss, var_list=d_vars, global_step=global_step)
+    g_solver = tf.train.RMSPropOptimizer(g_learning_rate).minimize(g_loss, var_list=g_vars)
     # g_solver = tf.train.AdamOptimizer(LEARNING_RATE).minimize(g_loss, var_list=g_vars)
 
 

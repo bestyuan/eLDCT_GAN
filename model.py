@@ -38,6 +38,7 @@ def discriminator(input, reuse=False):
     conv2, conv2_weights = conv_layer(conv1, 4, 48, 96, 2, "d_conv2", reuse=reuse)
     conv3, conv3_weights = conv_layer(conv2, 4, 96, 192, 2, "d_conv3", reuse=reuse)
     conv4, conv4_weights = conv_layer(conv3, 4, 192, 384, 1, "d_conv4", reuse=reuse)
-    conv5, conv5_weights = conv_layer(conv4, 4, 384, 1, 1, "d_conv5", activation_function=tf.nn.sigmoid,reuse=reuse)
+    # conv5, conv5_weights = conv_layer(conv4, 4, 384, 1, 1, "d_conv5", activation_function=tf.nn.sigmoid,reuse=reuse)
+    conv5, conv5_weights = conv_layer(conv4, 4, 384, 1, 1, "d_conv5", activation_function=None,reuse=reuse)
 
     return conv5
