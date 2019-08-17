@@ -33,7 +33,7 @@ ADVERSARIAL_LOSS_FACTOR = 0.5
 PIXEL_LOSS_FACTOR = 1.0
 STYLE_LOSS_FACTOR = 1.0
 SMOOTH_LOSS_FACTOR = 0.0001
-metrics_image = skimage.io.imread(METRICS_SET_DIR+'lung-300ma0006.jpg').astype('float32')
+metrics_image = skimage.io.imread(METRICS_SET_DIR+'Awaimatch-automa0012.jpg').astype('float32')
 
 
 def initialize(sess):

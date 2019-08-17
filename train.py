@@ -33,7 +33,7 @@ def train(data_training,data_groundtruth):
     ssim=0
 
     d_loss = 0.5*(tf.reduce_mean(Dx) + tf.reduce_mean(Dg))
-    g_loss = tf.reduce_mean(Dg) +  STYLE_LOSS_FACTOR * get_style_loss(real_in_bgr, Gz_bgr)
+    g_loss = tf.reduce_mean(Dg) +  STYLE_LOSS_FACTOR * get_style_loss(real_in_bgr, Gz_bgr)+SMOOTH_LOSS_FACTOR * get_smooth_loss(Gz)
     # g_loss = ADVERSARIAL_LOSS_FACTOR * -tf.reduce_mean(tf.log(Dg)) + PIXEL_LOSS_FACTOR * get_pixel_loss(real_in, Gz) \
     #          + STYLE_LOSS_FACTOR * get_style_loss(real_in_bgr, Gz_bgr) + SMOOTH_LOSS_FACTOR * get_smooth_loss(Gz)
     # g_loss = ADVERSARIAL_LOSS_FACTOR * -tf.reduce_mean(tf.log(Dg)) + PIXEL_LOSS_FACTOR * get_pixel_loss(real_in, Gz)
