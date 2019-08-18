@@ -3,13 +3,9 @@ import re
 import glob
 import skimage.io
 from itertools import cycle
-
 import numpy as np
 import tensorflow as tf
-
-
 from libs import vgg16
-
 from PIL import Image
 
 LEARNING_RATE = 0.02
@@ -21,8 +17,6 @@ CKPT_DIR = './Checkpoints/'
 IMG_DIR = './Images/'
 GRAPH_DIR = './Graphs/'
 TRAINING_SET_DIR= './dataset/training/'
-TRAINING_SET_DIR_1= './dataset/training_1/'
-TRAINING_SET_DIR_2= './dataset/training_2/'
 GROUNDTRUTH_SET_DIR='./dataset/groundtruth/'
 VALIDATION_SET_DIR='./dataset/validation/'
 METRICS_SET_DIR='./dataset/metrics/'
@@ -33,13 +27,11 @@ ADVERSARIAL_LOSS_FACTOR = 0.5
 PIXEL_LOSS_FACTOR = 1.0
 STYLE_LOSS_FACTOR = 1.0
 SMOOTH_LOSS_FACTOR = 0.0001
-metrics_image = skimage.io.imread(METRICS_SET_DIR+'Awaimatch-automa0012.jpg').astype('float32')
+metrics_image = skimage.io.imread(METRICS_SET_DIR+'lung-300ma0006.jpg').astype('float32')
 
 
 def initialize(sess):
     saver = tf.train.Saver(max_to_keep=5)
-    # writer = tf.summary.FileWriter(GRAPH_DIR, sess.graph)
-
     if not os.path.exists(CKPT_DIR):
         os.makedirs(CKPT_DIR)
     if not os.path.exists(IMG_DIR):
@@ -58,28 +50,17 @@ def get_training_dir_list():
 
 def load_next_training_batch():
     batch = next(pool_training)
-    # filelist = sorted(glob.glob(TRAINING_SET_DIR+ batch +'/*.png'), key=alphanum_key)
-    # batch = np.array([np.array(scipy.misc.imread(fname, mode='RGB').astype('float32')) for fname in filelist])
-    # npad =((0, 0), (56, 56), (0, 0), (0, 0))
-    # batch = np.pad(batch, pad_width=npad, mode='constant', constant_values=0)
     return batch
+
 def load_next_groundtruth_batch():
     batch = next(pool_groundtruth)
     return batch
-# def load_groundtruth():
-#     filelist = sorted(glob.glob(GROUNDTRUTH_SET_DIR + '/*.png'), key=alphanum_key)
-#     groundtruth = np.array([np.array(scipy.misc.imread(fname, mode='RGB').astype('float32')) for fname in filelist])
-#     # npad = ((0, 0), (56, 56), (0, 0), (0, 0))
-#     # groundtruth = np.pad(groundtruth, pad_width=npad, mode='constant', constant_values=0)
-#     return groundtruth
 
 def load_validation():
     filelist = sorted(glob.glob(VALIDATION_SET_DIR + '/*.jpg'), key=alphanum_key)
     validation = np.array([np.array(skimage.io.imread(fname).astype('float32')) for fname in filelist])
     if validation.ndim != 4:
         validation = skimage.color.gray2rgb(validation)
-    # npad = ((0, 0), (56, 56), (0, 0), (0, 0))
-    # validation = np.pad(validation, pad_width=npad, mode='constant', constant_values=0)
     return validation
 
 def training_dataset_init():
@@ -92,10 +73,6 @@ def training_dataset_init():
     if batch_groundtruth.ndim != 4:
         batch_training = skimage.color.gray2rgb(batch_training)
         batch_groundtruth = skimage.color.gray2rgb(batch_groundtruth)
-    # batch_groundtruth = split(batch_groundtruth, BATCH_SIZE)
-    # batch_training = standardization(batch_training)  # 标准化
-    # batch_groundtruth = standardization(batch_groundtruth)
-
     return batch_training,batch_groundtruth
 
 def getcycle(batch_training,batch_groundtruth):
@@ -106,32 +83,10 @@ def getcycle(batch_training,batch_groundtruth):
     pool_training = cycle(batch_training)
 
     pool_groundtruth = cycle(batch_groundtruth)
-    # return training_dir_list
 
 
 def imsave(filename, image):
     skimage.io.imsave(IMG_DIR+filename+'.jpg', image)
-
-def merge_images(file1, file2):
-    """Merge two images into one, displayed side by side
-    :param file1: path to first image file
-    :param file2: path to second image file
-    :return: the merged Image object
-    """
-    image1 = Image.fromarray(np.uint8(file1))
-    image2 = Image.fromarray(np.uint8(file2))
-
-    (width1, height1) = image1.size
-    (width2, height2) = image2.size
-
-    result_width = width1 + width2
-    result_height = max(height1, height2)
-
-    result = Image.new('RGB', (result_width, result_height))
-    result.paste(im=image1, box=(0, 0))
-    result.paste(im=image2, box=(width1, 0))
-    return result
-
 
 def tryint(s):
     try:
@@ -214,12 +169,11 @@ def standardization(img):
         mean = np.mean(temp,axis=(0,1))
         stddev = np.std(temp,axis=(0,1))
         NumElements =np.array([1.0/np.sqrt(img.shape[1]*img.shape[2]),1.0/np.sqrt(img.shape[1]*img.shape[2]),1.0/np.sqrt(img.shape[1]*img.shape[2])])   #3通道使用这个
-        # NumElements =np.array([1.0/np.sqrt(img.shape[1]*img.shape[2])])
         d = np.array((stddev,NumElements))
         adjusted_stddev =d.max(axis=0)
-        # adjusted_stddev =np.max(stddev, 1.0 / np.sqrt(NumElements))
         result[i,:,:,:]=(temp-mean)/adjusted_stddev
     return result
+
 def standardization_1(img):
     result=np.zeros((img.shape[0],img.shape[1],img.shape[2],img.shape[3]),dtype="float32")
     for i in range(0,img.shape[0]):

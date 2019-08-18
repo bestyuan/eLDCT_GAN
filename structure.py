@@ -1,4 +1,3 @@
-import tensorflow as tf
 import tensorflow.contrib.slim as slim
 
 from utils import *
@@ -10,11 +9,8 @@ def conv_layer(input_image, ksize, in_channels, out_channels, stride, scope_name
         output = slim.batch_norm(output)
         if activation_function:
             output = activation_function(output)
-            # output = slim.batch_norm(output)    ##exchange order with activation_function
         return output, filter
-        # output = tf.layers.conv2d(input_image,out_channels,ksize,strides=stride,padding='same',activation=activation_function)
-        # output = slim.batch_norm(output)
-        # return output,output
+
 def residual_layer(input_image, ksize, in_channels, out_channels, stride, scope_name):
     with tf.variable_scope(scope_name):
         output, filter = conv_layer(input_image, ksize, in_channels, out_channels, stride, scope_name+"_conv1")
