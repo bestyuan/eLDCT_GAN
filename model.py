@@ -11,9 +11,9 @@ def generator(input):
     deconv1 = deconvolution_layer(res3, [BATCH_SIZE, 256, 256, 64], 'g_deconv1')
     deconv2 = deconvolution_layer(deconv1, [BATCH_SIZE, input.shape[1], input.shape[2], 32], "g_deconv2")
     deconv2 = deconv2 + conv1
-    conv4, conv4_weights = conv_layer(deconv2, 9, 32, 3, 1, "g_conv5", activation_function=tf.nn.tanh)
-    conv4 = conv4 + input
-    output = output_between_zero_and_one(conv4)
+    deconv3, dconv3_weights = conv_layer(deconv2, 9, 32, 3, 1, "g_conv5", activation_function=tf.nn.tanh)
+    deconv3 = deconv3 + input
+    output = output_between_zero_and_one(deconv3)
     return output
 
 def discriminator(input, reuse=False):
