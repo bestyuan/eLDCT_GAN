@@ -29,7 +29,7 @@ def train(data_training,data_groundtruth):
     d_solver = tf.train.AdamOptimizer(d_learning_rate).minimize(d_loss, var_list=d_vars, global_step=global_step)
     g_solver = tf.train.AdamOptimizer(LEARNING_RATE).minimize(g_loss, var_list=g_vars)
 
-    d_clip = [v.assign(tf.clip_by_value(v, -0.01, 0.01)) for v in d_vars]
+    # d_clip = [v.assign(tf.clip_by_value(v, -0.01, 0.01)) for v in d_vars]
 
     init = tf.global_variables_initializer()
     with tf.Session() as sess:
@@ -57,7 +57,7 @@ def train(data_training,data_groundtruth):
             groundtruth_batch = standardization(groundtruth_batch)
             _learning_rate_d =  0.02
             _learning_rate_g =  0.02
-            sess.run(d_clip)
+            # sess.run(d_clip)
             _, d_loss_cur = sess.run([d_solver, d_loss], feed_dict={gen_in: training_batch,real_in: groundtruth_batch,d_learning_rate:_learning_rate_d})
             _, g_loss_cur,summary_str = sess.run([g_solver, g_loss,merged], feed_dict={gen_in: training_batch,real_in: groundtruth_batch,g_learning_rate:_learning_rate_g})
             writer.add_summary(summary_str,index)
